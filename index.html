@@ -2,807 +2,360 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CrisApp</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrisMultimedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-:root{
-  --bg:#0d0d0d;--surface:#181818;--surface2:#222;--border:#2a2a2a;
-  --accent:#e8b84b;--accent2:#4b8fe8;--rojo:#e84b4b;--verde:#4be87a;
-  --texto:#f0f0f0;--texto2:#999;--texto3:#555;
-}
-html , body { altura : 100 % ; desbordamiento : oculto ; fondo : var ( --bg ) ; color : var ( --texto ) ; fuente : 'Inter' , sans-serif ; }
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a26;
+    --accent: #e63946;
+    --gold: #f4a261;
+    --cyan: #48cae4;
+    --green: #52b788;
+    --text: #edf2f4;
+    --muted: #8d99ae;
+    --border: #2a2a3a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+  header {
+    text-align: center;
+    padding: 1.8rem 1rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 10vw, 5rem);
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--gold), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  header p { color: var(--muted); font-size: 0.78rem; margin-top: 0.3rem; letter-spacing: 2px; text-transform: uppercase; }
 
-/* ===== DISEÑO ===== */
-# app { display : flex ; flex-direction : column ; height : 100 vh ; }
-# contenido { flex : 1 ; overflow : hidden ; position : relative ; }
-. seccion { position : absolute ; inset : 0 ; overflow-y : auto ; display : none ; flex-direction : column ; }
-. sección . activa { pantalla : flex ; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 0.3rem;
+    padding: 0.6rem 1rem;
+    background: rgba(10,10,15,0.97);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex-shrink: 0;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); padding: 0.45rem 1rem;
+    border-radius: 999px; font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  nav button:hover { color: var(--text); border-color: var(--accent); }
+  nav button.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-/* ===== NAVEGACIÓN INFERIOR ===== */
-#nav { display : flex ; background : #111; border -top : 1px solid var ( -- border ) ; flex-shrink : 0 ; }  
-.nav - btn { flex : 1 ; display : flex ; flex-direction : column ; align-items : center ; justify - content : center ; padding : 8px 4px  10px ; cursor : pointer ; transition : color .2s ; color : var ( -- texto3 ) ; border : none ; background : none ; }  
-. navegación-btn . activo { color : var ( -accent ) ; }
-.nav-btn span{font-size:20px;line-height:1;}
-.nav-btn p{font-size:9px;margin-top:3px;letter-spacing:.5px;text-transform:uppercase;}
+  .section { display: none; padding: 1.2rem 1rem 2rem; max-width: 860px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
 
-/* ===== HEADER SECCIONES ===== */
-.sec-header{padding:20px 16px 12px;flex-shrink:0;}
-.sec-header h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);}
-.sec-header p{font-size:12px;color:var(--texto2);margin-top:2px;}
+  .sec-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; }
+  .sub-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--cyan); margin: 1rem 0 0.5rem; }
 
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.6rem; }
+  .rcard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.8rem 0.8rem 0.7rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .rcard:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rcard.playing { border-color: var(--green); box-shadow: 0 0 14px rgba(82,183,136,0.2); }
+  .rcard-flag { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .rcard-name { font-weight: 800; font-size: 0.85rem; line-height: 1.2; }
+  .rcard-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; }
+  .rcard-status {
+    display: inline-block; margin-top: 0.4rem;
+    font-size: 0.65rem; padding: 0.15rem 0.5rem;
+    border-radius: 999px; background: var(--surface);
+    color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .rcard.playing .rcard-status { background: rgba(82,183,136,0.2); color: var(--green); }
 
-/* ===========================
-   SECCIÓN 1: TV
-=========================== */
-#sec-tv{background:#000;}
-.tv-header{padding:14px 16px 10px;flex-shrink:0;}
-.tv-header h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);}
-.tv-screen{position:relative;width:100%;background:#000;flex-shrink:0;}
-.tv-screen video,.tv-screen iframe{width:100%;aspect-ratio:16/9;display:block;background:#000;}
-.tv-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
-.tv-overlay.oculto{display:none;}
-.tv-overlay span{font-size:48px;}
-.tv-overlay p{font-size:13px;color:white;letter-spacing:1px;}
-.tv-canales{padding:12px 16px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
-.canal-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
-.canal-card.activo{border-color:var(--accent);}
-.canal-card:active{background:var(--surface2);}
-.canal-icono{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.canal-info{flex:1;}
-.canal-nombre{font-size:14px;font-weight:600;}
-.canal-desc{font-size:11px;color:var(--texto2);margin-top:2px;}
-.canal-live{font-size:10px;color:var(--rojo);font-weight:600;letter-spacing:1px;}
-.dot-rojo{display:inline-block;width:6px;height:6px;background:var(--rojo);border-radius:50%;margin-right:4px;animation:pulso 1.5s ease-in-out infinite;}
-@keyframes pulso{0%,100%{opacity:1}50%{opacity:.3}}
+  #player-bar {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(10,10,15,0.97); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    padding: 0.7rem 1.2rem; align-items: center; gap: 0.8rem;
+  }
+  #player-bar.on { display: flex; }
+  .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+  .now { flex: 1; min-width: 0; }
+  .now span { display: block; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .now strong { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .btn-stop { background: var(--accent); border: none; color: white; padding: 0.45rem 0.9rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.75rem; cursor: pointer; flex-shrink: 0; }
 
-/* ===========================
-   SECCIÓN 2: RADIO
-=========================== */
-#sec-radio{background:var(--bg);}
-.radio-player-mini{margin:0 16px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;display:none;}
-.radio-player-mini.visible{display:block;}
-.rpm-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.rpm-info .rpm-label{font-size:9px;letter-spacing:3px;color:var(--rojo);text-transform:uppercase;}
-.rpm-info .rpm-nombre{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
-.rpm-info .rpm-freq{font-size:11px;color:var(--texto2);}
-.btn-stop-r{width:38px;height:38px;background:var(--rojo);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.viz{display:flex;align-items:flex-end;gap:3px;height:24px;}
-.vbar{width:3px;background:var(--rojo);border-radius:2px;animation:vbounce var(--d) ease-in-out infinite alternate;opacity:.7;}
-@keyframes vbounce{from{height:3px}to{height:var(--h)}}
-.radios-lista{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;}
-.radio-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
-.radio-item.activa{border-color:var(--rojo);background:#1a0808;}
-.radio-item:active{background:var(--surface2);}
-.ri-icono{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:11px;color:white;flex-shrink:0;}
-.ri-datos{flex:1;}
-.ri-nombre{font-size:14px;font-weight:600;}
-.ri-desc{font-size:11px;color:var(--texto2);margin-top:1px;}
-.ri-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.radio-item.activa .ri-btn{border-color:var(--rojo);background:var(--rojo);}
-.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
+  .vblock { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0.8rem; }
+  .vblock iframe { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
+  .vlabel { padding: 0.6rem 0.9rem; font-weight: 700; font-size: 0.85rem; border-top: 1px solid var(--border); }
+  .vlabel span { color: var(--muted); font-size: 0.7rem; font-weight: 400; margin-left: 0.4rem; }
 
-/* ===========================
-   SECCIÓN 3: EDITOR
-=========================== */
-#sec-editor{background:var(--bg);}
-.editor-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:10px 12px;background:#111;border-bottom:1px solid var(--border);flex-shrink:0;}
-.tb-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--texto);cursor:pointer;font-weight:600;}
-.tb-btn:active{background:#333;}
-.tb-btn.activo{background:var(--accent);color:#000;border-color:var(--accent);}
-.tb-sep{width:1px;background:var(--border);margin:2px 4px;}
-.tb-select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 6px;font-size:12px;color:var(--texto);cursor:pointer;}
-#area-editor{flex:1;overflow-y:auto;padding:20px 24px;background:white;color:#111;font-size:15px;line-height:1.8;outline:none;min-height:200px;}
-#area-editor:empty::before{content:'Empezá a escribir acá...';color:#aaa;}
-.editor-footer{padding:8px 12px;background:#111;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-.editor-footer span{font-size:11px;color:var(--texto2);}
-.btn-export{background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;}
-.btn-export:active{transform:scale(.95);}
-
-/* ===========================
-   SECCIÓN 4: CONTRATOS
-=========================== */
-#sec-contratos{background:var(--bg);}
-.contratos-lista{padding:0 16px;display:flex;flex-direction:column;gap:8px;}
-.contrato-tipo{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s;}
-.contrato-tipo:active{background:var(--surface2);}
-.ct-emoji{font-size:24px;margin-bottom:6px;display:block;}
-.ct-nombre{font-size:14px;font-weight:600;}
-.ct-desc{font-size:11px;color:var(--texto2);margin-top:2px;}
-
-/* Modal contrato */
-#modal-contrato{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:none;flex-direction:column;}
-#modal-contrato.visible{display:flex;}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);background:#111;flex-shrink:0;}
-.modal-header h3{font-size:16px;font-weight:600;}
-.btn-cerrar-modal{background:var(--surface2);border:none;border-radius:50%;width:32px;height:32px;color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.modal-campos{padding:16px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px;}
-.campo-label{font-size:12px;color:var(--texto2);margin-bottom:4px;}
-.campo-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--texto);outline:none;font-family:'Inter',sans-serif;}
-.campo-input:focus{border-color:var(--accent);}
-.btn-generar{background:var(--accent);color:#000;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;letter-spacing:.5px;}
-
-/* Modal resultado */
-#modal-resultado{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:none;flex-direction:column;}
-#modal-resultado.visible{display:flex;}
-.resultado-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);background:#111;flex-shrink:0;}
-#texto-contrato{flex:1;padding:20px;overflow-y:auto;background:white;color:#111;font-size:13px;line-height:1.9;white-space:pre-wrap;font-family:'Times New Roman',serif;}
-.resultado-footer{padding:10px 16px;background:#111;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
-
-
-audio{display:none;}
+  .search-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .search-row input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 0.65rem 1rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; outline: none; transition: border-color .2s; }
+  .search-row input:focus { border-color: var(--cyan); }
+  .search-row input::placeholder { color: var(--muted); }
+  .search-row button { background: var(--cyan); border: none; color: #0a0a0f; padding: 0.65rem 1.1rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; cursor: pointer; font-size: 0.85rem; }
+  .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.7rem; }
+  .bcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all .2s; }
+  .bcard:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .bcard img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: var(--surface); }
+  .bcard-info { padding: 0.5rem; }
+  .bcard-title { font-size: 0.75rem; font-weight: 700; line-height: 1.3; }
+  .bcard-author { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; }
+  .reader-wrap { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 0.8rem; }
+  .reader-wrap.on { display: block; }
+  .reader-head { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .reader-head span { font-weight: 700; font-size: 0.82rem; }
+  .reader-head button { background: none; border: 1px solid var(--border); color: var(--muted); padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 0.72rem; }
+  .reader-wrap iframe { width: 100%; height: 480px; border: none; display: block; }
+  .info { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.8rem; line-height: 1.5; }
+  .loading { color: var(--muted); font-size: 0.82rem; padding: 1rem; text-align: center; }
+  .err { color: var(--accent); font-size: 0.78rem; padding: 0.5rem; text-align: center; }
+  audio { display: none; }
 </style>
 </head>
 <body>
-<div id="app">
-  <div id="contenido">
 
-    
+<header>
+  <h1>CrisMultimedia</h1>
+  <p>Radio · Video · Biblioteca</p>
+</header>
 
-    <!-- ===== TV ===== -->
-    <div id="sec-tv" class="seccion">
-      <div class="tv-header">
-        <h2>📺 TV EN VIVO</h2>
-      </div>
-      <div class="tv-screen">
-        <iframe id="tv-frame" src="" allowfullscreen style="display:none;width:100%;aspect-ratio:16/9;border:none;background:#000;"></iframe>
-        <div class="tv-overlay" id="tv-overlay">
-          <span>📺</span>
-          <p>Seleccioná un canal</p>
-        </div>
-      </div>
-      <div class="tv-canales">
-        <div class="canal-card" id="tv-card-0" onclick="verCanal(0)">
-          <div class="canal-icono" style="background:linear-gradient(135deg,#1a3a6e,#3a6aae)">📺</div>
-          <div class="canal-info">
-            <div class="canal-nombre">TV Pública · Canal 7</div>
-            <div class="canal-desc">Televisión pública nacional Argentina</div>
-          </div>
-          <div class="canal-live"><span class="dot-rojo"></span>EN VIVO</div>
-        </div>
-        <div class="canal-card" id="tv-card-1" onclick="verCanal(1)">
-          <div class="canal-icono" style="background:linear-gradient(135deg,#6e1a1a,#ae3a3a)">📡</div>
-          <div class="canal-info">
-            <div class="canal-nombre">C5N</div>
-            <div class="canal-desc">Noticias las 24 horas</div>
-          </div>
-          <div class="canal-live"><span class="dot-rojo"></span>EN VIVO</div>
-        </div>
-        <div class="canal-card" id="tv-card-2" onclick="verCanal(2)">
-          <div class="canal-icono" style="background:linear-gradient(135deg,#1a5a1a,#3a9a3a)">📡</div>
-          <div class="canal-info">
-            <div class="canal-nombre">Canal de la Ciudad</div>
-            <div class="canal-desc">Buenos Aires · señal abierta</div>
-          </div>
-          <div class="canal-live"><span class="dot-rojo"></span>EN VIVO</div>
-        </div>
-      </div>
+<nav>
+  <button class="active" onclick="show('radio',this)">📻 Radio</button>
+  <button onclick="show('video',this)">🎬 Video</button>
+  <button onclick="show('biblioteca',this)">📚 Biblioteca</button>
+</nav>
+
+<!-- RADIO -->
+<div id="radio" class="section active">
+  <div class="sec-title">📻 Radio Mundial</div>
+
+  <div class="sub-title">🇦🇷 Argentina</div>
+  <div class="grid">
+    <div class="rcard" id="r0" onclick="play('https://sa.mp3.icecast.magma.edge-access.net/sc_rad1','Radio Nacional AM870','r0')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Radio Nacional</div><div class="rcard-sub">AM 870</div><div class="rcard-status">▶ Escuchar</div>
     </div>
-
-    <!-- ===== RADIO ===== -->
-    <div id="sec-radio" class="seccion">
-      <div class="sec-header">
-        <h2>📻 RADIO</h2>
-        <p>Emisoras en vivo · requiere WiFi</p>
-      </div>
-      <div class="radio-player-mini" id="rpm">
-        <div class="rpm-top">
-          <div class="rpm-info">
-            <div class="rpm-label">● escuchando</div>
-            <div class="rpm-nombre" id="rpm-nombre">—</div>
-            <div class="rpm-freq" id="rpm-freq">—</div>
-          </div>
-          <button class="btn-stop-r" onclick="detenerRadio()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="white"><rect width="12" height="12" rx="2"/></svg>
-          </button>
-        </div>
-        <div class="viz" id="viz"></div>
-      </div>
-      <div class="radios-lista">
-        <div class="radio-item" id="ri-0" onclick="tocarRadio(0)">
-          <div class="ri-icono" style="background:linear-gradient(135deg,#1a3a6e,#2a5aaa)">MITRE</div>
-          <div class="ri-datos"><div class="ri-nombre">Radio Mitre</div><div class="ri-desc">AM 790 · Noticias y política</div></div>
-          <div class="ri-btn" id="rib-0"><svg width="9" height="11" viewBox="0 0 9 11" fill="white"><path d="M0 0l9 5.5-9 5.5z"/></svg></div>
-        </div>
-        <div class="radio-item" id="ri-1" onclick="tocarRadio(1)">
-          <div class="ri-icono" style="background:linear-gradient(135deg,#5a3a1a,#8a5a2a)">LA RED</div>
-          <div class="ri-datos"><div class="ri-nombre">La Red</div><div class="ri-desc">AM 910 · Información</div></div>
-          <div class="ri-btn" id="rib-1"><svg width="9" height="11" viewBox="0 0 9 11" fill="white"><path d="M0 0l9 5.5-9 5.5z"/></svg></div>
-        </div>
-        <div class="radio-item" id="ri-2" onclick="tocarRadio(2)">
-          <div class="ri-icono" style="background:linear-gradient(135deg,#1a4a6e,#2a7aae)">AM750</div>
-          <div class="ri-datos"><div class="ri-nombre">AM 750</div><div class="ri-desc">AM 750 · Progresista</div></div>
-          <div class="ri-btn" id="rib-2"><svg width="9" height="11" viewBox="0 0 9 11" fill="white"><path d="M0 0l9 5.5-9 5.5z"/></svg></div>
-        </div>
-      </div>
+    <div class="rcard" id="r1" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/AM790_56AAC.aac','Radio Mitre AM790','r1')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Radio Mitre</div><div class="rcard-sub">AM 790</div><div class="rcard-status">▶ Escuchar</div>
     </div>
-
-    <!-- ===== EDITOR ===== -->
-    <div id="sec-editor" class="seccion">
-      <div class="editor-toolbar">
-        <button class="tb-btn" onclick="fmt('bold')"><b>N</b></button>
-        <button class="tb-btn" onclick="fmt('italic')"><i>C</i></button>
-        <button class="tb-btn" onclick="fmt('underline')"><u>S</u></button>
-        <div class="tb-sep"></div>
-        <select class="tb-select" onchange="fmtFuente(this.value)">
-          <option value="Arial">Arial</option>
-          <option value="Times New Roman">Times</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Courier New">Courier</option>
-        </select>
-        <select class="tb-select" onchange="fmtTam(this.value)">
-          <option value="3">Normal</option>
-          <option value="1">Pequeño</option>
-          <option value="5">Grande</option>
-          <option value="6">Título</option>
-        </select>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="fmt('justifyLeft')" title="Izquierda">⬅</button>
-        <button class="tb-btn" onclick="fmt('justifyFull')" title="Justificado">☰</button>
-        <button class="tb-btn" onclick="fmt('justifyCenter')" title="Centro">≡</button>
-        <button class="tb-btn" onclick="fmt('justifyRight')" title="Derecha">➡</button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="fmt('insertUnorderedList')">• Lista</button>
-        <button class="tb-btn" onclick="limpiarEditor()">🗑</button>
-      </div>
-      <div id="area-editor" contenteditable="true" spellcheck="true" onkeyup="contarPalabras()"></div>
-      <div class="editor-footer">
-        <span id="contador-palabras">0 palabras</span>
-        <button class="btn-export" onclick="exportarTexto()">📋 Copiar texto</button>
-      </div>
+    <div class="rcard" id="r2" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/LA_RED_AM910AAC.aac','La Red AM910','r2')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">La Red</div><div class="rcard-sub">AM 910</div><div class="rcard-status">▶ Escuchar</div>
     </div>
-
-    <!-- ===== CONTRATOS ===== -->
-    <div id="sec-contratos" class="seccion">
-      <div class="sec-header">
-        <h2>📄 CONTRATOS</h2>
-        <p>Generá documentos legales básicos</p>
-      </div>
-      <div class="contratos-lista">
-        <div class="contrato-tipo" onclick="abrirContrato('locacion')">
-          <span class="ct-emoji">🏠</span>
-          <div class="ct-nombre">Contrato de Locación</div>
-          <div class="ct-desc">Alquiler de inmueble · Art. 1187 CCyC</div>
-        </div>
-        <div class="contrato-tipo" onclick="abrirContrato('compraventa')">
-          <span class="ct-emoji">🤝</span>
-          <div class="ct-nombre">Contrato de Compraventa</div>
-          <div class="ct-desc">Compraventa de bienes muebles e inmuebles</div>
-        </div>
-        <div class="contrato-tipo" onclick="abrirContrato('mutuo')">
-          <span class="ct-emoji">💰</span>
-          <div class="ct-nombre">Contrato de Mutuo</div>
-          <div class="ct-desc">Préstamo de dinero · Art. 1525 CCyC</div>
-        </div>
-        <div class="contrato-tipo" onclick="abrirContrato('servicios')">
-          <span class="ct-emoji">💼</span>
-          <div class="ct-nombre">Contrato de Prestación de Servicios</div>
-          <div class="ct-desc">Locación de obra o servicios</div>
-        </div>
-        <div class="contrato-tipo" onclick="abrirContrato('carta')">
-          <span class="ct-emoji">✉️</span>
-          <div class="ct-nombre">Carta Documento</div>
-          <div class="ct-desc">Intimación fehaciente</div>
-        </div>
-      </div>
+    <div class="rcard" id="r3" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/RIVADAVIAAAC.aac','Rivadavia AM630','r3')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Rivadavia</div><div class="rcard-sub">AM 630</div><div class="rcard-status">▶ Escuchar</div>
     </div>
-
-    <!-- ===== NOTICIAS ===== -->
-    
-
-  </div><!-- fin contenido -->
-
-  <!-- NAV -->
-  <nav id="nav">
-    <button class="nav-btn activo" onclick="irA('ia',this)"><span>🤖</span><p>Cris IA</p></button>
-    <button class="nav-btn" onclick="irA('tv',this)"><span>📺</span><p>TV</p></button>
-    <button class="nav-btn" onclick="irA('radio',this)"><span>📻</span><p>Radio</p></button>
-    <button class="nav-btn" onclick="irA('editor',this)"><span>✍️</span><p>Editor</p></button>
-    <button class="nav-btn" onclick="irA('contratos',this)"><span>📄</span><p>Docs</p></button>
-    <button class="nav-btn" onclick="irA('noticias',this)"><span>📰</span><p>Noticias</p></button>
-  </nav>
-</div>
-
-<!-- Modal campos contrato -->
-<div id="modal-contrato">
-  <div class="modal-header">
-    <h3 id="modal-titulo">Contrato</h3>
-    <button class="btn-cerrar-modal" onclick="cerrarModal()">✕</button>
+    <div class="rcard" id="r4" onclick="play('https://edge05.radiohdvivo.com/continental','Continental AM590','r4')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Continental</div><div class="rcard-sub">AM 590</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r5" onclick="play('https://unlimited2-ar.dps.live/cnn-ar/aac/icecast.audio','CNN Radio AM950','r5')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">CNN Radio</div><div class="rcard-sub">AM 950</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r6" onclick="play('https://server1.stweb.tv/rcvos/live/chunks.m3u8','Radio Con Vos FM89.9','r6')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Con Vos</div><div class="rcard-sub">FM 89.9</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r7" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/AM750AAC.aac','AM 750','r7')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">AM 750</div><div class="rcard-sub">AM 750</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r8" onclick="play('https://cdn.instream.audio:9582/stream','Cooperativa AM770','r8')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Cooperativa</div><div class="rcard-sub">AM 770</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r9" onclick="play('https://vmf.edge-apps.net/playlist/urbana.m3u8/play.m3u8','Urbana Play FM104.3','r9')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Urbana Play</div><div class="rcard-sub">FM 104.3</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r10" onclick="play('https://streaming.radionacional.com.ar/rn-clasica','Nacional Clásica','r10')">
+      <div class="rcard-flag">🎼</div><div class="rcard-name">Nacional Clásica</div><div class="rcard-sub">Música clásica</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r11" onclick="play('http://ohradio.cc:9344/;','Radio La Luna','r11')">
+      <div class="rcard-flag">🌙</div><div class="rcard-name">Radio La Luna</div><div class="rcard-sub">AM 1140</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
   </div>
-  <div class="modal-campos" id="modal-campos"></div>
-</div>
 
-<!-- Modal resultado contrato -->
-<div id="modal-resultado">
-  <div class="resultado-header">
-    <h3 style="font-size:15px;font-weight:600;">Documento generado</h3>
-    <button class="btn-cerrar-modal" onclick="cerrarResultado()">✕</button>
+  <div class="sub-title">🌎 América & Europa</div>
+  <div class="grid">
+    <div class="rcard" id="r20" onclick="play('https://live02.rfi.fr/rfispagnol-96k.mp3','RFI Español','r20')">
+      <div class="rcard-flag">🇫🇷</div><div class="rcard-name">RFI Español</div><div class="rcard-sub">Francia</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r21" onclick="play('https://stream.live.vc.bbcmedia.co.uk/bbc_world_service','BBC World','r21')">
+      <div class="rcard-flag">🇬🇧</div><div class="rcard-name">BBC World</div><div class="rcard-sub">Reino Unido</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r22" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/XEWWAMAAC.aac','W Radio México','r22')">
+      <div class="rcard-flag">🇲🇽</div><div class="rcard-name">W Radio</div><div class="rcard-sub">México</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r23" onclick="play('https://rne-live.rtveradio.es/rne1/rne1.mp3','RNE Radio 1','r23')">
+      <div class="rcard-flag">🇪🇸</div><div class="rcard-name">RNE Radio 1</div><div class="rcard-sub">España</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r24" onclick="play('https://music.streamabc.net/dw-world-mp3-md-81300','Deutsche Welle','r24')">
+      <div class="rcard-flag">🇩🇪</div><div class="rcard-name">Deutsche Welle</div><div class="rcard-sub">Alemania</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r25" onclick="play('https://live.wostreaming.net/direct/ppm-jazz24aac-ibc1','Jazz 24','r25')">
+      <div class="rcard-flag">🎷</div><div class="rcard-name">Jazz 24</div><div class="rcard-sub">Jazz continuo</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
   </div>
-  <div id="texto-contrato"></div>
-  <div class="resultado-footer">
-    <button class="btn-accion btn-copiar" onclick="copiarContrato()">📋 Copiar</button>
-    <button class="btn-accion btn-compartir" onclick="compartirContrato()">📤 Compartir</button>
+
+  <div class="sub-title">🌏 Asia & África</div>
+  <div class="grid">
+    <div class="rcard" id="r30" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/VOAAAC.aac','VOA Africa','r30')">
+      <div class="rcard-flag">🌍</div><div class="rcard-name">VOA Africa</div><div class="rcard-sub">Voz de América</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r31" onclick="play('https://stream.srr.ro/radio-romania-actualitati-64k.mp3','Radio Romania','r31')">
+      <div class="rcard-flag">🇷🇴</div><div class="rcard-name">Radio Romania</div><div class="rcard-sub">Europa del Este</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r32" onclick="play('https://radio.abc.net.au/radionational/mp3-128k','ABC Radio Australia','r32')">
+      <div class="rcard-flag">🇦🇺</div><div class="rcard-name">ABC Radio</div><div class="rcard-sub">Australia</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
   </div>
 </div>
 
-<audio id="audio-radio"></audio>
+<!-- VIDEO -->
+<div id="video" class="section">
+  <div class="sec-title">🎬 Video</div>
+  <p class="info">Contenido gratuito de Archive.org — dominio público y libre de derechos.</p>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/mr-bean-episode-01-a-nice-cup-of-tea" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Mr. Bean — Ep. 1 <span>Archive.org</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/mr-bean-episode-4-mr.-bean-goes-to-town" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Mr. Bean — Ep. 4: Goes to Town <span>Archive.org</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/CharlieChapin-ModernTimes1936" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Tiempos Modernos — Chaplin (1936) <span>Dominio Público</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/the-general-1926" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">The General — Buster Keaton (1926) <span>Dominio Público</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/nosferatu_201407" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Nosferatu (1922) <span>Dominio Público</span></div>
+  </div>
+</div>
+
+<!-- BIBLIOTECA -->
+<div id="biblioteca" class="section">
+  <div class="sec-title">📚 Biblioteca</div>
+  <p class="info">Buscá libros en Open Library. Muchos se leen gratis online o se descargan en PDF/EPUB.</p>
+  <div class="search-row">
+    <input type="text" id="q" placeholder="Ej: Borges, Kafka, Cervantes..." onkeydown="if(event.key==='Enter')buscar()">
+    <button onclick="buscar()">Buscar</button>
+  </div>
+  <div id="bres" class="books-grid"></div>
+  <div class="reader-wrap" id="reader">
+    <div class="reader-head">
+      <span id="rtitle">Leyendo...</span>
+      <button onclick="cerrar()">✕ Cerrar</button>
+    </div>
+    <iframe id="rframe" src=""></iframe>
+  </div>
+</div>
+
+<audio id="aud"></audio>
+<div id="player-bar">
+  <div class="pulse"></div>
+  <div class="now"><span>En vivo</span><strong id="pname">—</strong></div>
+  <button class="btn-stop" onclick="stopRadio()">■ Stop</button>
+</div>
 
 <script>
-// ============================================================
-//  NAVEGACIÓN
-// ============================================================
-function irA(sec, btn) {
-  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('activo'));
-  document.getElementById('sec-' + sec).classList.add('activa');
-  btn.classList.add('activo');
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
 }
 
-// ============================================================
-//  IA CRIS
-// ============================================================
-let apiKey = localStorage.getItem('cris_api_key') || '';
-let historial = [];
+let cur = null;
+const aud = document.getElementById('aud');
 
-function guardarApiKey() {
-  const k = document.getElementById('api-key-input').value.trim();
-  if (!k) return;
-  apiKey = k;
-  localStorage.setItem('cris_api_key', k);
-  document.getElementById('ia-estado').textContent = '✅ Activa · claude-sonnet-4-6';
-  document.getElementById('api-key-input').value = '●●●●●●●●';
+function play(url, name, id) {
+  if (cur) {
+    cur.classList.remove('playing');
+    cur.querySelector('.rcard-status').textContent = '▶ Escuchar';
+  }
+  if (window.AndroidRadio && typeof window.AndroidRadio.startRadio === 'function') {
+    aud.pause(); aud.removeAttribute('src'); aud.load();
+    window.AndroidRadio.startRadio(url, name, id);
+  } else {
+    aud.src = url;
+    aud.play().catch(() => {});
+  }
+  document.getElementById('pname').textContent = name;
+  document.getElementById('player-bar').classList.add('on');
+  cur = document.getElementById(id);
+  cur.classList.add('playing');
+  cur.querySelector('.rcard-status').textContent = '🔊 En vivo';
 }
 
-if (apiKey) {
-  document.getElementById('ia-estado').textContent = '✅ Activa · claude-sonnet-4-6';
-  document.getElementById('api-key-input').placeholder = '●●●●●●●● (configurada)';
+function stopRadio() {
+  if (window.AndroidRadio && typeof window.AndroidRadio.stopRadio === 'function') window.AndroidRadio.stopRadio();
+  aud.pause(); aud.src = '';
+  document.getElementById('player-bar').classList.remove('on');
+  if (cur) {
+    cur.classList.remove('playing');
+    cur.querySelector('.rcard-status').textContent = '▶ Escuchar';
+    cur = null;
+  }
 }
 
-function iaEnter(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }
-}
-
-async function enviarMensaje() {
-  const input = document.getElementById('ia-input');
-  const texto = input.value.trim();
-  if (!texto) return;
-  if (!apiKey) { alert('Primero ingresá tu API key de Anthropic arriba.'); return; }
-  input.value = '';
-
-  agregarMensaje(texto, 'user');
-  historial.push({ role: 'user', content: texto });
-
-  const pensando = agregarMensaje('Pensando...', 'ia pensando');
-
+async function buscar() {
+  const q = document.getElementById('q').value.trim();
+  if (!q) return;
+  const r = document.getElementById('bres');
+  r.innerHTML = '<div class="loading">Buscando...</div>';
+  cerrar();
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        system: 'Sos Cris, una asistente de IA amable, inteligente y con acento argentino (usás "vos", "che", "dale"). Respondés de forma clara y útil. Cuando corresponda, hacés aclaraciones legales usando el derecho argentino (CCyC 2015).',
-        messages: historial
-      })
-    });
-    const data = await resp.json();
-    pensando.remove();
-    const respuesta = data.content?.[0]?.text || 'No pude procesar la respuesta.';
-    historial.push({ role: 'assistant', content: respuesta });
-    agregarMensaje(respuesta, 'ia');
-  } catch (e) {
-    pensando.remove();
-    agregarMensaje('Error de conexión. Verificá tu API key y tu internet.', 'ia');
+    const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,cover_i`);
+    const data = await res.json();
+    if (!data.docs.length) { r.innerHTML = '<div class="err">Sin resultados.</div>'; return; }
+    r.innerHTML = data.docs.map(b => {
+      const cover = b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : '';
+      const author = b.author_name ? b.author_name[0] : 'Autor desconocido';
+      const olid = b.key.replace('/works/','');
+      return `<div class="bcard" onclick="leer('${olid}','${b.title.replace(/'/g,"\\'")}')">
+        <img src="${cover}" alt="" onerror="this.style.display='none'">
+        <div class="bcard-info">
+          <div class="bcard-title">${b.title}</div>
+          <div class="bcard-author">${author}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    r.innerHTML = '<div class="err">Error al buscar. Intentá de nuevo.</div>';
   }
 }
 
-function agregarMensaje(texto, tipo) {
-  const chat = document.getElementById('chat-mensajes');
-  const div = document.createElement('div');
-  div.className = 'msg msg-' + tipo;
-  div.textContent = texto;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return div;
+function leer(olid, title) {
+  document.getElementById('rtitle').textContent = title;
+  document.getElementById('rframe').src = `https://openlibrary.org/works/${olid}`;
+  document.getElementById('reader').classList.add('on');
+  document.getElementById('reader').scrollIntoView({ behavior: 'smooth' });
 }
-
-// ============================================================
-//  TV
-// ============================================================
-const canales = [
-  { nombre: 'TV Pública · Canal 7', url: 'https://live.tvpublica.ar/hls/live.m3u8', youtube: 'https://www.youtube.com/embed/live_stream?channel=UCs231K71Bnu5295_x0MB5Pg&autoplay=1' },
-  { nombre: 'C5N', url: null, youtube: 'https://www.youtube.com/embed/live_stream?channel=UCeOJen5SkEYlLCaIGTQTEFw&autoplay=1' },
-  { nombre: 'Canal de la Ciudad', url: null, youtube: 'https://www.youtube.com/embed/live_stream?channel=UCT4C4zBTfXI2IAGi7mwNFew&autoplay=1' }
-];
-
-let canalActivo = null;
-
-function verCanal(idx) {
-  const c = canales[idx];
-  document.querySelectorAll('.canal-card').forEach((el,i) => el.classList.toggle('activo', i === idx));
-  canalActivo = idx;
-
-  const overlay = document.getElementById('tv-overlay');
-  const frame = document.getElementById('tv-frame');
-  overlay.classList.add('oculto');
-  frame.style.display = 'block';
-  // Usamos YouTube embed como fallback universal que funciona en Android
-  frame.src = c.youtube;
+function cerrar() {
+  document.getElementById('reader').classList.remove('on');
+  document.getElementById('rframe').src = '';
 }
-
-// ============================================================
-//  RADIO
-// ============================================================
-const radiosData = [
-  { nombre: 'Radio Mitre', freq: 'AM 790', stream: 'https://playerservices.streamtheworld.com/api/livestream-redirect/AM790_56AAC.aac' },
-  { nombre: 'La Red', freq: 'AM 910', stream: 'https://playerservices.streamtheworld.com/api/livestream-redirect/LA_RED_AM910AAC.aac' },
-  { nombre: 'AM 750', freq: 'AM 750', stream: 'https://playerservices.streamtheworld.com/api/livestream-redirect/AM750AAC.aac' }
-];
-
-const audioR = document.getElementById('audio-radio');
-let radioActiva = null;
-
-// Visualizador
-const vizEl = document.getElementById('viz');
-for (let i = 0; i < 18; i++) {
-  const b = document.createElement('div'); b.className = 'vbar';
-  const h = Math.floor(Math.random()*16)+5, d = (Math.random()*.6+.3).toFixed(2);
-  b.style.cssText = `--h:${h}px;--d:${d}s;height:${Math.floor(Math.random()*12)+3}px`;
-  vizEl.appendChild(b);
-}
-
-function tocarRadio(idx) {
-  if (radioActiva === idx) return;
-  if (radioActiva !== null) { document.getElementById('ri-'+radioActiva).classList.remove('activa'); resetRBtn(radioActiva); }
-  radioActiva = idx;
-  const r = radiosData[idx];
-  document.getElementById('ri-'+idx).classList.add('activa');
-  document.getElementById('rib-'+idx).innerHTML = '<div class="spin"></div>';
-  document.getElementById('rpm-nombre').textContent = r.nombre;
-  document.getElementById('rpm-freq').textContent = r.freq;
-  document.getElementById('rpm').classList.add('visible');
-  audioR.src = r.stream; audioR.load(); audioR.play().catch(() => {});
-  audioR.oncanplay = () => { document.getElementById('rib-'+idx).innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="white"><rect width="3" height="10" rx="1"/><rect x="5" width="3" height="10" rx="1"/></svg>'; };
-}
-
-function detenerRadio() {
-  audioR.pause(); audioR.src = '';
-  if (radioActiva !== null) { document.getElementById('ri-'+radioActiva).classList.remove('activa'); resetRBtn(radioActiva); }
-  radioActiva = null;
-  document.getElementById('rpm').classList.remove('visible');
-}
-
-function resetRBtn(i) {
-  document.getElementById('rib-'+i).innerHTML = '<svg width="9" height="11" viewBox="0 0 9 11" fill="white"><path d="M0 0l9 5.5-9 5.5z"/></svg>';
-}
-
-// ============================================================
-//  EDITOR
-// ============================================================
-function fmt(cmd) { document.execCommand(cmd, false, null); document.getElementById('area-editor').focus(); }
-function fmtFuente(f) { document.execCommand('fontName', false, f); document.getElementById('area-editor').focus(); }
-function fmtTam(s) { document.execCommand('fontSize', false, s); document.getElementById('area-editor').focus(); }
-function limpiarEditor() { if(confirm('¿Borrar todo el texto?')) document.getElementById('area-editor').innerHTML = ''; }
-function contarPalabras() {
-  const t = document.getElementById('area-editor').innerText.trim();
-  const c = t ? t.split(/\s+/).length : 0;
-  document.getElementById('contador-palabras').textContent = c + ' palabra' + (c!==1?'s':'');
-}
-function exportarTexto() {
-  const t = document.getElementById('area-editor').innerText;
-  if (!t.trim()) { alert('El editor está vacío.'); return; }
-  if (navigator.share) navigator.share({ text: t });
-  else if (navigator.clipboard) { navigator.clipboard.writeText(t); alert('Texto copiado al portapapeles.'); }
-}
-
-// ============================================================
-//  CONTRATOS
-// ============================================================
-const templatesCampos = {
-  locacion: {
-    titulo: 'Contrato de Locación',
-    campos: [
-      {id:'locador',label:'Nombre completo del locador (propietario)',placeholder:'Juan Pérez'},
-      {id:'locador_dni',label:'DNI del locador',placeholder:'20.000.000'},
-      {id:'locatario',label:'Nombre completo del locatario (inquilino)',placeholder:'María García'},
-      {id:'locatario_dni',label:'DNI del locatario',placeholder:'25.000.000'},
-      {id:'inmueble',label:'Dirección del inmueble',placeholder:'Calle Falsa 123, CABA'},
-      {id:'monto',label:'Monto mensual ($)',placeholder:'50.000'},
-      {id:'plazo',label:'Plazo del contrato',placeholder:'3 años'},
-      {id:'fecha',label:'Fecha de inicio',placeholder:'01/04/2026'},
-      {id:'ciudad',label:'Ciudad',placeholder:'La Plata'},
-    ]
-  },
-  compraventa: {
-    titulo: 'Contrato de Compraventa',
-    campos: [
-      {id:'vendedor',label:'Nombre del vendedor',placeholder:'Juan Pérez'},
-      {id:'vendedor_dni',label:'DNI del vendedor',placeholder:'20.000.000'},
-      {id:'comprador',label:'Nombre del comprador',placeholder:'María García'},
-      {id:'comprador_dni',label:'DNI del comprador',placeholder:'25.000.000'},
-      {id:'objeto',label:'Descripción del objeto vendido',placeholder:'Automóvil marca...'},
-      {id:'precio',label:'Precio de venta ($)',placeholder:'1.000.000'},
-      {id:'fecha',label:'Fecha',placeholder:'12/03/2026'},
-      {id:'ciudad',label:'Ciudad',placeholder:'La Plata'},
-    ]
-  },
-  mutuo: {
-    titulo: 'Contrato de Mutuo (Préstamo)',
-    campos: [
-      {id:'mutuante',label:'Nombre del prestamista (mutuante)',placeholder:'Juan Pérez'},
-      {id:'mutuante_dni',label:'DNI del prestamista',placeholder:'20.000.000'},
-      {id:'mutuario',label:'Nombre del deudor (mutuario)',placeholder:'María García'},
-      {id:'mutuario_dni',label:'DNI del deudor',placeholder:'25.000.000'},
-      {id:'monto',label:'Monto prestado ($)',placeholder:'100.000'},
-      {id:'interes',label:'Tasa de interés mensual (%)',placeholder:'0% (sin interés)'},
-      {id:'plazo',label:'Plazo para devolver',placeholder:'6 meses'},
-      {id:'fecha',label:'Fecha',placeholder:'12/03/2026'},
-      {id:'ciudad',label:'Ciudad',placeholder:'La Plata'},
-    ]
-  },
-  servicios: {
-    titulo: 'Contrato de Prestación de Servicios',
-    campos: [
-      {id:'prestador',label:'Nombre del prestador',placeholder:'Juan Pérez'},
-      {id:'prestador_dni',label:'DNI del prestador',placeholder:'20.000.000'},
-      {id:'cliente',label:'Nombre del cliente',placeholder:'Empresa SRL'},
-      {id:'cliente_dni',label:'CUIT/DNI del cliente',placeholder:'30-00000000-0'},
-      {id:'servicio',label:'Descripción del servicio',placeholder:'Asesoramiento jurídico...'},
-      {id:'honorarios',label:'Honorarios ($)',placeholder:'50.000'},
-      {id:'plazo',label:'Duración del contrato',placeholder:'6 meses'},
-      {id:'fecha',label:'Fecha',placeholder:'12/03/2026'},
-      {id:'ciudad',label:'Ciudad',placeholder:'La Plata'},
-    ]
-  },
-  carta: {
-    titulo: 'Carta Documento',
-    campos: [
-      {id:'remitente',label:'Nombre del remitente',placeholder:'Juan Pérez'},
-      {id:'remitente_dni',label:'DNI del remitente',placeholder:'20.000.000'},
-      {id:'destinatario',label:'Nombre del destinatario',placeholder:'María García'},
-      {id:'asunto',label:'Objeto de la intimación',placeholder:'Incumplimiento de contrato...'},
-      {id:'plazo_intim',label:'Plazo para cumplir (días hábiles)',placeholder:'5'},
-      {id:'fecha',label:'Fecha',placeholder:'12/03/2026'},
-      {id:'ciudad',label:'Ciudad',placeholder:'La Plata'},
-    ]
-  }
-};
-
-let tipoContratoActual = '';
-
-function abrirContrato(tipo) {
-  tipoContratoActual = tipo;
-  const tmpl = templatesCampos[tipo];
-  document.getElementById('modal-titulo').textContent = tmpl.titulo;
-  const campos = document.getElementById('modal-campos');
-  campos.innerHTML = tmpl.campos.map(c => `
-    <div>
-      <div class="campo-label">${c.label}</div>
-      <input class="campo-input" id="campo-${c.id}" placeholder="${c.placeholder}" type="text">
-    </div>
-  `).join('') + `<button class="btn-generar" onclick="generarContrato()">📄 Generar documento</button>`;
-  document.getElementById('modal-contrato').classList.add('visible');
-}
-
-function cerrarModal() { document.getElementById('modal-contrato').classList.remove('visible'); }
-function cerrarResultado() { document.getElementById('modal-resultado').classList.remove('visible'); }
-
-function getVal(id) {
-  const el = document.getElementById('campo-' + id);
-  return el ? el.value.trim() || el.placeholder : '';
-}
-
-function generarContrato() {
-  const tipo = tipoContratoActual;
-  let texto = '';
-  const fecha = getVal('fecha'), ciudad = getVal('ciudad');
-
-  if (tipo === 'locacion') {
-    texto = `CONTRATO DE LOCACIÓN DE INMUEBLE
-
-En la ciudad de ${ciudad}, a los ${fecha}, entre:
-
-LOCADOR: ${getVal('locador')}, DNI N° ${getVal('locador_dni')}, en adelante denominado "el Locador";
-
-y
-
-LOCATARIO: ${getVal('locatario')}, DNI N° ${getVal('locatario_dni')}, en adelante denominado "el Locatario";
-
-convienen en celebrar el presente CONTRATO DE LOCACIÓN DE INMUEBLE, conforme a las disposiciones de los arts. 1187 y ss. del Código Civil y Comercial de la Nación, bajo las siguientes cláusulas:
-
-PRIMERA — OBJETO: El Locador cede en locación al Locatario el inmueble ubicado en ${getVal('inmueble')}, en buen estado de conservación y apto para el destino convenido.
-
-SEGUNDA — DESTINO: El inmueble será destinado exclusivamente a uso habitacional, quedando expresamente prohibida su utilización para cualquier actividad comercial o industrial sin autorización escrita del Locador.
-
-TERCERA — PLAZO: El plazo de la presente locación es de ${getVal('plazo')}, contado a partir de la fecha de inicio indicada en el encabezado.
-
-CUARTA — PRECIO: El canon locativo mensual es de PESOS ${getVal('monto')} ($${getVal('monto')}), que el Locatario abonará dentro de los primeros cinco (5) días hábiles de cada mes.
-
-QUINTA — DEPÓSITO EN GARANTÍA: Al momento de la firma, el Locatario entregará al Locador un importe equivalente a un (1) mes de alquiler en concepto de depósito en garantía, conforme al art. 1199 CCyC.
-
-SEXTA — CONSERVACIÓN: El Locatario se obliga a conservar el inmueble en buen estado y a realizar a su cargo las reparaciones locativas que resulten necesarias.
-
-SÉPTIMA — RESCISIÓN ANTICIPADA: El Locatario podrá rescindir anticipadamente conforme lo dispuesto por el art. 1221 CCyC, debiendo notificar con no menos de un (1) mes de anticipación.
-
-OCTAVA — JURISDICCIÓN: Para cualquier controversia derivada del presente contrato, las partes se someten a la jurisdicción de los Tribunales Ordinarios de la ciudad de ${ciudad}, renunciando a cualquier otro fuero o jurisdicción.
-
-En prueba de conformidad, las partes firman dos ejemplares de un mismo tenor y a un solo efecto.
-
-___________________________          ___________________________
-     EL LOCADOR                              EL LOCATARIO
-${getVal('locador')}                          ${getVal('locatario')}
-DNI: ${getVal('locador_dni')}                        DNI: ${getVal('locatario_dni')}`;
-  }
-  else if (tipo === 'compraventa') {
-    texto = `CONTRATO DE COMPRAVENTA
-
-En la ciudad de ${ciudad}, a los ${fecha}, entre:
-
-VENDEDOR: ${getVal('vendedor')}, DNI N° ${getVal('vendedor_dni')};
-COMPRADOR: ${getVal('comprador')}, DNI N° ${getVal('comprador_dni')};
-
-convienen:
-
-PRIMERA — OBJETO: El Vendedor vende al Comprador el siguiente bien: ${getVal('objeto')}.
-
-SEGUNDA — PRECIO: El precio total de la venta es de PESOS ${getVal('precio')} ($${getVal('precio')}), que el Comprador abona en este acto, recibiendo el Vendedor plena conformidad.
-
-TERCERA — TRADICIÓN: El Vendedor hace entrega del bien en este mismo acto, transfiriendo la posesión pacífica al Comprador.
-
-CUARTA — GARANTÍA DE EVICCIÓN Y VICIOS: El Vendedor garantiza al Comprador la posesión legal y pacífica del bien, respondiendo por evicción y vicios redhibitorios conforme arts. 1033 y ss. CCyC.
-
-QUINTA — JURISDICCIÓN: Para cualquier controversia las partes se someten a la jurisdicción de los Tribunales Ordinarios de ${ciudad}.
-
-Firman:
-
-___________________________          ___________________________
-      EL VENDEDOR                             EL COMPRADOR
-${getVal('vendedor')}                           ${getVal('comprador')}
-DNI: ${getVal('vendedor_dni')}                       DNI: ${getVal('comprador_dni')}`;
-  }
-  else if (tipo === 'mutuo') {
-    texto = `CONTRATO DE MUTUO
-
-En la ciudad de ${ciudad}, a los ${fecha}, entre:
-
-MUTUANTE: ${getVal('mutuante')}, DNI N° ${getVal('mutuante_dni')}, en adelante "el Mutuante";
-MUTUARIO: ${getVal('mutuario')}, DNI N° ${getVal('mutuario_dni')}, en adelante "el Mutuario";
-
-convienen celebrar el presente CONTRATO DE MUTUO conforme al art. 1525 y ss. del CCyC:
-
-PRIMERA — OBJETO: El Mutuante entrega en préstamo al Mutuario la suma de PESOS ${getVal('monto')} ($${getVal('monto')}), que el Mutuario recibe en este acto.
-
-SEGUNDA — INTERESES: El préstamo devengará un interés del ${getVal('interes')} mensual sobre el capital adeudado.
-
-TERCERA — PLAZO: El Mutuario se obliga a devolver el capital más los intereses en un plazo de ${getVal('plazo')} contado a partir de la firma del presente.
-
-CUARTA — MORA: La falta de pago en término constituirá al Mutuario en mora de pleno derecho, sin necesidad de interpelación judicial ni extrajudicial.
-
-QUINTA — JURISDICCIÓN: Para cualquier controversia las partes se someten a los Tribunales Ordinarios de ${ciudad}.
-
-Firman:
-
-___________________________          ___________________________
-      EL MUTUANTE                             EL MUTUARIO
-${getVal('mutuante')}                           ${getVal('mutuario')}
-DNI: ${getVal('mutuante_dni')}                       DNI: ${getVal('mutuario_dni')}`;
-  }
-  else if (tipo === 'servicios') {
-    texto = `CONTRATO DE PRESTACIÓN DE SERVICIOS
-
-En la ciudad de ${ciudad}, a los ${fecha}, entre:
-
-PRESTADOR: ${getVal('prestador')}, DNI N° ${getVal('prestador_dni')};
-CLIENTE: ${getVal('cliente')}, CUIT/DNI N° ${getVal('cliente_dni')};
-
-convienen:
-
-PRIMERA — OBJETO: El Prestador se obliga a realizar en favor del Cliente los siguientes servicios: ${getVal('servicio')}.
-
-SEGUNDA — HONORARIOS: Por los servicios descriptos, el Cliente abonará al Prestador la suma de PESOS ${getVal('honorarios')} ($${getVal('honorarios')}), en la forma y oportunidad que se acuerde entre las partes.
-
-TERCERA — PLAZO: La presente relación contractual tendrá una duración de ${getVal('plazo')}.
-
-CUARTA — AUTONOMÍA: El Prestador ejecutará los servicios de manera autónoma e independiente, sin relación de dependencia con el Cliente.
-
-QUINTA — CONFIDENCIALIDAD: Las partes se obligan a guardar reserva sobre la información confidencial a la que accedan con motivo del presente contrato.
-
-SEXTA — JURISDICCIÓN: Para cualquier controversia las partes se someten a los Tribunales de ${ciudad}.
-
-Firman:
-
-___________________________          ___________________________
-      EL PRESTADOR                             EL CLIENTE
-${getVal('prestador')}                           ${getVal('cliente')}
-DNI: ${getVal('prestador_dni')}`;
-  }
-  else if (tipo === 'carta') {
-    texto = `CARTA DOCUMENTO
-
-${ciudad}, ${fecha}
-
-Señor/a ${getVal('destinatario')}
-Presente
-
-De mi mayor consideración:
-
-Por medio de la presente, yo, ${getVal('remitente')}, DNI N° ${getVal('remitente_dni')}, me dirijo a usted a efectos de INTIMARLO/LA en forma fehaciente a que en el plazo improrrogable de ${getVal('plazo_intim')} días hábiles contados desde la recepción de la presente proceda a: ${getVal('asunto')}.
-
-Vencido dicho plazo sin que se dé cumplimiento a lo aquí requerido, me veré en la obligación de iniciar las acciones legales que correspondan para la defensa de mis derechos, con más los daños y perjuicios que el incumplimiento ocasione, incluyendo costas y honorarios profesionales a su cargo.
-
-Sin otro particular, saludo a usted atentamente.
-
-___________________________
-${getVal('remitente')}
-DNI: ${getVal('remitente_dni')}`;
-  }
-
-  document.getElementById('texto-contrato').textContent = texto;
-  document.getElementById('modal-contrato').classList.remove('visible');
-  document.getElementById('modal-resultado').classList.add('visible');
-}
-
-function copiarContrato() {
-  const t = document.getElementById('texto-contrato').textContent;
-  if (navigator.clipboard) { navigator.clipboard.writeText(t); alert('¡Copiado!'); }
-}
-function compartirContrato() {
-  const t = document.getElementById('texto-contrato').textContent;
-  if (navigator.share) navigator.share({ text: t, title: 'Documento legal' });
-  else copiarContrato();
-}
-
-// ============================================================
-//  NOTICIAS vía RSS2JSON
-// ============================================================
-const fuentesRSS = {
-  infobae: { url: 'https://www.infobae.com/feeds/rss/', nombre: 'Infobae' },
-  lanacion: { url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', nombre: 'La Nación' },
-  clarin: { url: 'https://www.clarin.com/rss/ultimas-noticias/', nombre: 'Clarín' },
-  pagina12: { url: 'https://www.pagina12.com.ar/rss/portada', nombre: 'Página 12' },
-  ambito: { url: 'https://www.ambito.com/rss/pages/home.xml', nombre: 'Ámbito' }
-};
-
-async function cargarNoticias(fuente) {
-  document.querySelectorAll('.fuente-btn').forEach(b => b.classList.toggle('activa', b.textContent.toLowerCase().includes(fuente.substring(0,4))));
-  const lista = document.getElementById('noticias-lista');
-  lista.innerHTML = '<div class="loading-text">⏳ Cargando noticias...</div>';
-
-  const rss = fuentesRSS[fuente];
-  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss.url)}&api_key=public&count=15`;
-
-  try {
-    const resp = await fetch(apiUrl);
-    const data = await resp.json();
-    if (!data.items || data.items.length === 0) throw new Error('Sin noticias');
-
-    lista.innerHTML = data.items.map(item => `
-      <div class="noticia-card" onclick="abrirNoticia('${encodeURIComponent(item.link)}')">
-        <div class="noticia-fuente">${rss.nombre}</div>
-        <div class="noticia-titulo">${item.title}</div>
-        <div class="noticia-fecha">${new Date(item.pubDate).toLocaleDateString('es-AR', {day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}</div>
-      </div>
-    `).join('');
-  } catch (e) {
-    lista.innerHTML = `<div class="loading-text">No se pudieron cargar las noticias.<br>Verificá tu conexión a internet.</div>`;
-  }
-}
-
-function abrirNoticia(url) {
-  window.open(decodeURIComponent(url), '_blank');
-}
-
-// Auto-cargar Infobae al entrar a noticias
-document.querySelector('[onclick="irA(\'noticias\',this)"]').addEventListener('click', () => {
-  setTimeout(() => cargarNoticias('infobae'), 100);
-});
 </script>
 </body>
 </html>
