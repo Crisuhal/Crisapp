@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <application android:theme="@style/AppTheme" android:label="CrisMultimedia" android:usesCleartextTraffic="true" android:hardwareAccelerated="true" android:allowBackup="false">
+    <application android:theme="@style/AppTheme" android:label="CrisMultimedia" android:icon="@drawable/ic_crismultimedia" android:usesCleartextTraffic="true" android:hardwareAccelerated="true" android:allowBackup="false">
         <activity android:name=".MainActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
