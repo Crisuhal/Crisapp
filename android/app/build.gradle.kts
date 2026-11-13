@@ -1,0 +1,22 @@
+plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
+
+android {
+    namespace = "ar.com.crismultimedia"
+    compileSdk = 34
+    defaultConfig {
+        applicationId = "ar.com.crismultimedia"
+        minSdk = 19
+        targetSdk = 28
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes { release { isMinifyEnabled = false } }
+    compileOptions { sourceCompatibility = JavaVersion.VERSION_1_8; targetCompatibility = JavaVersion.VERSION_1_8 }
+    kotlinOptions { jvmTarget = "1.8" }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.media:media:1.6.0")
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+}
