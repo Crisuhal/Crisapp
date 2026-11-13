@@ -2,6 +2,7 @@ package ar.com.crismultimedia
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -9,21 +10,25 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import java.net.URI
+import androidx.webkit.WebViewAssetLoader
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
+    private lateinit var assetLoader: WebViewAssetLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
+            .build()
         web = WebView(this)
         web.setBackgroundColor(android.graphics.Color.rgb(10, 10, 15))
         web.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                if (url == null) return false
-                if (url.startsWith("file:///android_asset/")) return false
-                return false
-            }
+            override fun shouldInterceptRequest(view: WebView?, request: android.webkit.WebResourceRequest?) =
+                request?.url?.let { assetLoader.shouldInterceptRequest(it) }
+            @Suppress("DEPRECATION")
+            override fun shouldInterceptRequest(view: WebView?, url: String?) =
+                url?.let { assetLoader.shouldInterceptRequest(Uri.parse(it)) }
         }
         web.webChromeClient = WebChromeClient()
         web.settings.javaScriptEnabled = true
@@ -32,15 +37,15 @@ class MainActivity : Activity() {
         web.settings.cacheMode = WebSettings.LOAD_DEFAULT
         web.addJavascriptInterface(RadioBridge(), "AndroidRadio")
         setContentView(web)
-        web.loadUrl("file:///android_asset/index.html")
+        web.loadUrl("https://appassets.androidplatform.net/assets/index.html")
     }
 
     inner class RadioBridge {
         @JavascriptInterface
         fun startRadio(url: String, title: String, cardId: String) {
             runOnUiThread {
-                val uri = try { URI(url) } catch (_: Exception) { null }
-                if (uri == null || (uri.scheme != "https" && uri.scheme != "http") || uri.host == null) {
+                val uri = Uri.parse(url)
+                if ((uri.scheme != "https" && uri.scheme != "http") || uri.host.isNullOrBlank()) {
                     Toast.makeText(this@MainActivity, "Enlace de radio inválido", Toast.LENGTH_SHORT).show()
                     return@runOnUiThread
                 }
