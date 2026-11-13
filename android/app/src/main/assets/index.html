@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrisMultimedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a26;
+    --accent: #e63946;
+    --gold: #f4a261;
+    --cyan: #48cae4;
+    --green: #52b788;
+    --text: #edf2f4;
+    --muted: #8d99ae;
+    --border: #2a2a3a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+  header {
+    text-align: center;
+    padding: 1.8rem 1rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display:flex; align-items:center; justify-content:center; gap:.7rem; }
+  .brand-mark { width:clamp(2.6rem,10vw,4.4rem); height:clamp(2.6rem,10vw,4.4rem); flex-shrink:0; filter:drop-shadow(0 0 12px rgba(230,57,70,.32)); }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 10vw, 5rem);
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--gold), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  header p { color: var(--muted); font-size: 0.78rem; margin-top: 0.3rem; letter-spacing: 2px; text-transform: uppercase; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 0.3rem;
+    padding: 0.6rem 1rem;
+    background: rgba(10,10,15,0.97);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex-shrink: 0;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); padding: 0.45rem 1rem;
+    border-radius: 999px; font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  nav button:hover { color: var(--text); border-color: var(--accent); }
+  nav button.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .section { display: none; padding: 1.2rem 1rem 2rem; max-width: 860px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  .sec-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; }
+  .sub-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--cyan); margin: 1rem 0 0.5rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.6rem; }
+  .rcard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.8rem 0.8rem 0.7rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .rcard:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .rcard.playing { border-color: var(--green); box-shadow: 0 0 14px rgba(82,183,136,0.2); }
+  .rcard-flag { font-size: 1.5rem; margin-bottom: 0.3rem; }
+  .rcard-name { font-weight: 800; font-size: 0.85rem; line-height: 1.2; }
+  .rcard-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; }
+  .rcard-status {
+    display: inline-block; margin-top: 0.4rem;
+    font-size: 0.65rem; padding: 0.15rem 0.5rem;
+    border-radius: 999px; background: var(--surface);
+    color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .rcard.playing .rcard-status { background: rgba(82,183,136,0.2); color: var(--green); }
+
+  #player-bar {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(10,10,15,0.97); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    padding: 0.7rem 1.2rem; align-items: center; gap: 0.8rem;
+  }
+  #player-bar.on { display: flex; }
+  .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+  .now { flex: 1; min-width: 0; }
+  .now span { display: block; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .now strong { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .btn-stop { background: var(--accent); border: none; color: white; padding: 0.45rem 0.9rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.75rem; cursor: pointer; flex-shrink: 0; }
+
+  .vblock { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 0.8rem; }
+  .vblock iframe { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
+  .vlabel { padding: 0.6rem 0.9rem; font-weight: 700; font-size: 0.85rem; border-top: 1px solid var(--border); }
+  .vlabel span { color: var(--muted); font-size: 0.7rem; font-weight: 400; margin-left: 0.4rem; }
+
+  .search-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .search-row input { flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 0.65rem 1rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; outline: none; transition: border-color .2s; }
+  .search-row input:focus { border-color: var(--cyan); }
+  .search-row input::placeholder { color: var(--muted); }
+  .search-row button { background: var(--cyan); border: none; color: #0a0a0f; padding: 0.65rem 1.1rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; cursor: pointer; font-size: 0.85rem; }
+  .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.7rem; }
+  .bcard { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all .2s; }
+  .bcard:hover { border-color: var(--cyan); transform: translateY(-2px); }
+  .bcard img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: var(--surface); }
+  .bcard-info { padding: 0.5rem; }
+  .bcard-title { font-size: 0.75rem; font-weight: 700; line-height: 1.3; }
+  .bcard-author { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; }
+  .reader-wrap { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 0.8rem; }
+  .reader-wrap.on { display: block; }
+  .reader-head { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .reader-head span { font-weight: 700; font-size: 0.82rem; }
+  .reader-head button { background: none; border: 1px solid var(--border); color: var(--muted); padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 0.72rem; }
+  .reader-wrap iframe { width: 100%; height: 480px; border: none; display: block; }
+  .info { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.8rem; line-height: 1.5; }
+  .loading { color: var(--muted); font-size: 0.82rem; padding: 1rem; text-align: center; }
+  .err { color: var(--accent); font-size: 0.78rem; padding: 0.5rem; text-align: center; }
+  audio { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 80 80" role="img" aria-label="Logo CrisMultimedia">
+      <defs><linearGradient id="logoGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e63946"/><stop offset=".55" stop-color="#f4a261"/><stop offset="1" stop-color="#48cae4"/></linearGradient></defs>
+      <rect x="4" y="4" width="72" height="72" rx="23" fill="#171721" stroke="url(#logoGlow)" stroke-width="3"/>
+      <path d="M22 31c4-6 9-9 15-9M17 24c6-9 13-13 22-14M58 31c-4-6-9-9-15-9M63 24c-6-9-13-13-22-14" fill="none" stroke="url(#logoGlow)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="40" cy="43" r="19" fill="url(#logoGlow)"/>
+      <circle cx="40" cy="43" r="7" fill="#171721"/>
+      <path d="M27 64h26" stroke="#edf2f4" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <h1>CrisMultimedia</h1>
+  </div>
+  <p>Radio · Video · Biblioteca</p>
+</header>
+
+<nav>
+  <button class="active" onclick="show('radio',this)">📻 Radio</button>
+  <button onclick="show('video',this)">🎬 Video</button>
+  <button onclick="show('biblioteca',this)">📚 Biblioteca</button>
+</nav>
+
+<!-- RADIO -->
+<div id="radio" class="section active">
+  <div class="sec-title">📻 Radio Mundial</div>
+
+  <div class="sub-title">🇦🇷 Argentina</div>
+  <div class="grid">
+    <div class="rcard" id="r0" onclick="play('https://sa.mp3.icecast.magma.edge-access.net/sc_rad1','Radio Nacional AM870','r0')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Radio Nacional</div><div class="rcard-sub">AM 870</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r1" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/AM790_56AAC.aac','Radio Mitre AM790','r1')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Radio Mitre</div><div class="rcard-sub">AM 790</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r2" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/LA_RED_AM910AAC.aac','La Red AM910','r2')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">La Red</div><div class="rcard-sub">AM 910</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r3" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/RIVADAVIAAAC.aac','Rivadavia AM630','r3')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Rivadavia</div><div class="rcard-sub">AM 630</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r4" onclick="play('https://edge05.radiohdvivo.com/continental','Continental AM590','r4')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Continental</div><div class="rcard-sub">AM 590</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r5" onclick="play('https://unlimited2-ar.dps.live/cnn-ar/aac/icecast.audio','CNN Radio AM950','r5')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">CNN Radio</div><div class="rcard-sub">AM 950</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r6" onclick="play('https://server1.stweb.tv/rcvos/live/chunks.m3u8','Radio Con Vos FM89.9','r6')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Con Vos</div><div class="rcard-sub">FM 89.9</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r7" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/AM750AAC.aac','AM 750','r7')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">AM 750</div><div class="rcard-sub">AM 750</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r8" onclick="play('https://cdn.instream.audio:9582/stream','Cooperativa AM770','r8')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Cooperativa</div><div class="rcard-sub">AM 770</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r9" onclick="play('https://vmf.edge-apps.net/playlist/urbana.m3u8/play.m3u8','Urbana Play FM104.3','r9')">
+      <div class="rcard-flag">🇦🇷</div><div class="rcard-name">Urbana Play</div><div class="rcard-sub">FM 104.3</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r10" onclick="play('https://streaming.radionacional.com.ar/rn-clasica','Nacional Clásica','r10')">
+      <div class="rcard-flag">🎼</div><div class="rcard-name">Nacional Clásica</div><div class="rcard-sub">Música clásica</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r11" onclick="play('http://ohradio.cc:9344/;','Radio La Luna','r11')">
+      <div class="rcard-flag">🌙</div><div class="rcard-name">Radio La Luna</div><div class="rcard-sub">AM 1140</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+  </div>
+
+  <div class="sub-title">🌎 América & Europa</div>
+  <div class="grid">
+    <div class="rcard" id="r20" onclick="play('https://live02.rfi.fr/rfispagnol-96k.mp3','RFI Español','r20')">
+      <div class="rcard-flag">🇫🇷</div><div class="rcard-name">RFI Español</div><div class="rcard-sub">Francia</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r21" onclick="play('https://stream.live.vc.bbcmedia.co.uk/bbc_world_service','BBC World','r21')">
+      <div class="rcard-flag">🇬🇧</div><div class="rcard-name">BBC World</div><div class="rcard-sub">Reino Unido</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r22" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/XEWWAMAAC.aac','W Radio México','r22')">
+      <div class="rcard-flag">🇲🇽</div><div class="rcard-name">W Radio</div><div class="rcard-sub">México</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r23" onclick="play('https://rne-live.rtveradio.es/rne1/rne1.mp3','RNE Radio 1','r23')">
+      <div class="rcard-flag">🇪🇸</div><div class="rcard-name">RNE Radio 1</div><div class="rcard-sub">España</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r24" onclick="play('https://music.streamabc.net/dw-world-mp3-md-81300','Deutsche Welle','r24')">
+      <div class="rcard-flag">🇩🇪</div><div class="rcard-name">Deutsche Welle</div><div class="rcard-sub">Alemania</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r25" onclick="play('https://live.wostreaming.net/direct/ppm-jazz24aac-ibc1','Jazz 24','r25')">
+      <div class="rcard-flag">🎷</div><div class="rcard-name">Jazz 24</div><div class="rcard-sub">Jazz continuo</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+  </div>
+
+  <div class="sub-title">🌏 Asia & África</div>
+  <div class="grid">
+    <div class="rcard" id="r30" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/VOAAAC.aac','VOA Africa','r30')">
+      <div class="rcard-flag">🌍</div><div class="rcard-name">VOA Africa</div><div class="rcard-sub">Voz de América</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r31" onclick="play('https://stream.srr.ro/radio-romania-actualitati-64k.mp3','Radio Romania','r31')">
+      <div class="rcard-flag">🇷🇴</div><div class="rcard-name">Radio Romania</div><div class="rcard-sub">Europa del Este</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+    <div class="rcard" id="r32" onclick="play('https://radio.abc.net.au/radionational/mp3-128k','ABC Radio Australia','r32')">
+      <div class="rcard-flag">🇦🇺</div><div class="rcard-name">ABC Radio</div><div class="rcard-sub">Australia</div><div class="rcard-status">▶ Escuchar</div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO -->
+<div id="video" class="section">
+  <div class="sec-title">🎬 Video</div>
+  <p class="info">Contenido gratuito de Archive.org — dominio público y libre de derechos.</p>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/mr-bean-episode-01-a-nice-cup-of-tea" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Mr. Bean — Ep. 1 <span>Archive.org</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/mr-bean-episode-4-mr.-bean-goes-to-town" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Mr. Bean — Ep. 4: Goes to Town <span>Archive.org</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/CharlieChapin-ModernTimes1936" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Tiempos Modernos — Chaplin (1936) <span>Dominio Público</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/the-general-1926" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">The General — Buster Keaton (1926) <span>Dominio Público</span></div>
+  </div>
+  <div class="vblock">
+    <iframe src="https://archive.org/embed/nosferatu_201407" allowfullscreen loading="lazy"></iframe>
+    <div class="vlabel">Nosferatu (1922) <span>Dominio Público</span></div>
+  </div>
+</div>
+
+<!-- BIBLIOTECA -->
+<div id="biblioteca" class="section">
+  <div class="sec-title">📚 Biblioteca</div>
+  <p class="info">Buscá libros en Open Library. Muchos se leen gratis online o se descargan en PDF/EPUB.</p>
+  <div class="search-row">
+    <input type="text" id="q" placeholder="Ej: Borges, Kafka, Cervantes..." onkeydown="if(event.key==='Enter')buscar()">
+    <button onclick="buscar()">Buscar</button>
+  </div>
+  <div id="bres" class="books-grid"></div>
+  <div class="reader-wrap" id="reader">
+    <div class="reader-head">
+      <span id="rtitle">Leyendo...</span>
+      <button onclick="cerrar()">✕ Cerrar</button>
+    </div>
+    <iframe id="rframe" src=""></iframe>
+  </div>
+</div>
+
+<audio id="aud"></audio>
+<div id="player-bar">
+  <div class="pulse"></div>
+  <div class="now"><span>En vivo</span><strong id="pname">—</strong></div>
+  <button class="btn-stop" onclick="stopRadio()">■ Stop</button>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+let cur = null;
+const aud = document.getElementById('aud');
+
+function play(url, name, id) {
+  if (cur) {
+    cur.classList.remove('playing');
+    cur.querySelector('.rcard-status').textContent = '▶ Escuchar';
+  }
+  if (window.AndroidRadio && typeof window.AndroidRadio.startRadio === 'function') {
+    aud.pause(); aud.removeAttribute('src'); aud.load();
+    window.AndroidRadio.startRadio(url, name, id);
+  } else {
+    aud.src = url;
+    aud.play().catch(() => {});
+  }
+  document.getElementById('pname').textContent = name;
+  document.getElementById('player-bar').classList.add('on');
+  cur = document.getElementById(id);
+  cur.classList.add('playing');
+  cur.querySelector('.rcard-status').textContent = '🔊 En vivo';
+}
+
+function stopRadio() {
+  if (window.AndroidRadio && typeof window.AndroidRadio.stopRadio === 'function') window.AndroidRadio.stopRadio();
+  aud.pause(); aud.src = '';
+  document.getElementById('player-bar').classList.remove('on');
+  if (cur) {
+    cur.classList.remove('playing');
+    cur.querySelector('.rcard-status').textContent = '▶ Escuchar';
+    cur = null;
+  }
+}
+
+async function buscar() {
+  const q = document.getElementById('q').value.trim();
+  if (!q) return;
+  const r = document.getElementById('bres');
+  r.innerHTML = '<div class="loading">Buscando...</div>';
+  cerrar();
+  try {
+    const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,cover_i`);
+    const data = await res.json();
+    if (!data.docs.length) { r.innerHTML = '<div class="err">Sin resultados.</div>'; return; }
+    r.innerHTML = data.docs.map(b => {
+      const cover = b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : '';
+      const author = b.author_name ? b.author_name[0] : 'Autor desconocido';
+      const olid = b.key.replace('/works/','');
+      return `<div class="bcard" onclick="leer('${olid}','${b.title.replace(/'/g,"\\'")}')">
+        <img src="${cover}" alt="" onerror="this.style.display='none'">
+        <div class="bcard-info">
+          <div class="bcard-title">${b.title}</div>
+          <div class="bcard-author">${author}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    r.innerHTML = '<div class="err">Error al buscar. Intentá de nuevo.</div>';
+  }
+}
+
+function leer(olid, title) {
+  document.getElementById('rtitle').textContent = title;
+  document.getElementById('rframe').src = `https://openlibrary.org/works/${olid}`;
+  document.getElementById('reader').classList.add('on');
+  document.getElementById('reader').scrollIntoView({ behavior: 'smooth' });
+}
+function cerrar() {
+  document.getElementById('reader').classList.remove('on');
+  document.getElementById('rframe').src = '';
+}
+</script>
+</body>
+</html>
